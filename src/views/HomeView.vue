@@ -1,8 +1,8 @@
 <template>
-  <div class="container">
+  <main class="container">
     <h1>Label Car</h1>
       <CarCard v-for="car in cars" :key="car._id" :car="car" class="cards"/>
-  </div>
+  </main>
 </template>
 
 <script setup>

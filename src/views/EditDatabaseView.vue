@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <main class="container">
     <h1>Modification de la base de données</h1>
 
     <form @submit.prevent="createCar()">
@@ -58,16 +58,41 @@
 
       <MainButton class="form-button" type="submit">Ajouter</MainButton>
     </form>
-  </div>
+
+    <form @submit.prevent="deleteCar()">
+      <h2>Supprimer un véhicule</h2>
+
+      <div class="inputs-container">
+        <div class="form-group">
+          <label for="transmission">Véhicule :</label>
+          <select id="transmission" v-model="carSelectedId">
+            <option v-for="car in cars" :key="car._id" :value="car._id">{{ car.name }}</option>
+          </select>
+        </div>
+      </div>
+
+      <MainButton class="form-button" type="submit">Supprimer</MainButton>
+    </form>
+  </main>
 </template>
 
+
 <script setup>
-  import { ref } from 'vue';
+  import { ref, onBeforeMount } from 'vue';
   import MainButton from '@/components/buttons/MainButton.vue';
-  import { createVehicle } from '@/services/api.js';
+  import { getVehicles, createVehicle, deleteVehicle } from '@/services/api.js';
   import { useRouter } from 'vue-router';
   const router = useRouter();
 
+  // Get all vehicles
+  const cars = ref(undefined);
+  onBeforeMount(() => {
+    getVehicles()
+    .then(response => cars.value = response)
+    .catch(error => console.error(error));
+  });
+
+  // Create a new vehicle
   const car = ref({
     name: '',
     options: {
@@ -80,12 +105,6 @@
     price: 0,
     reservations: 0
   });
-
-  // const test = car.value.options.aircondition === 'Oui' ? true : false;
-  // console.log(test);
-
-  // Mercedes-Benz Classe C
-  // https://www.sixt.fr/fileadmin/files/global/user_upload/fleet/png/350x200/mb-c-klasse-4d-grau-2020.png
 
   const createCar = () => createVehicle({
     name: car.value.name,
@@ -103,7 +122,16 @@
     router.push({ name: 'home' });
   })
   .catch(error => console.error(error));
+
+  // Delete a vehicle
+  const carSelectedId = ref('');
+  const deleteCar = () => deleteVehicle(carSelectedId.value)
+  .then(() => {
+    router.push({ name: 'home' });
+  })
+  .catch(error => console.error(error));
 </script>
+
 
 <style scoped>
   h1 {
@@ -111,8 +139,8 @@
   }
 
   form {
-    margin: auto;
-    width: 40%;
+    margin: auto auto 2rem auto;
+    width: 50%;
     border: 2px solid rgba(37, 37, 37, 0.7);
     border-radius: 1rem;
     display: flex;

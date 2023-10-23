@@ -6,3 +6,7 @@ export const getVehicles = async () => api(`/cars`, { method: 'GET' });
 export const createVehicle = async (vehicle) => {
   return api(`/cars`, { method: 'POST', body: vehicle });
 }
+
+export const deleteVehicle = async (id) => {
+  return api(`/cars/${id}`, { method: 'DELETE' });
+}
